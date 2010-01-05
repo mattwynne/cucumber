@@ -11,16 +11,16 @@ module Cucumber
           @printer.feature(feature)
         end
         
-        if @scenario.from_outline?
-          on_new_scenario_outline do |scenario_outline|
+        if unit.from_outline?
+          on_new_scenario_outline(unit) do |scenario_outline|
             @printer.scenario_outline(scenario_outline)
           end
           
-          on_new_examples_table do |examples_table|
+          on_new_examples_table(unit) do |examples_table|
             @printer.examples_table(examples_table)
           end
         else
-          @printer.scenario(@scenario)
+          @printer.scenario(unit)
         end
       end
       
@@ -29,7 +29,7 @@ module Cucumber
       end
       
       def after_unit(unit_result)
-        @printer.after_example(unit_result) if @scenario.from_outline?
+        @printer.after_example(unit_result) if unit_result.unit.from_outline?
       end
       
       private
@@ -41,16 +41,16 @@ module Cucumber
         end
       end
       
-      def on_new_scenario_outline
-        if @scenario_outline != @scenario.scenario_outline
-          @scenario_outline = @scenario.scenario_outline
+      def on_new_scenario_outline(unit)
+        if @scenario_outline != unit.scenario_outline
+          @scenario_outline = unit.scenario_outline
           yield @scenario_outline
         end
       end
       
-      def on_new_examples_table
-        if @examples_table != @scenario.examples
-          @examples_table = @scenario.examples
+      def on_new_examples_table(unit)
+        if @examples_table != unit.examples
+          @examples_table = unit.examples
           yield @examples_table
         end
       end

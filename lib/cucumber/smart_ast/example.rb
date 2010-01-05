@@ -15,6 +15,10 @@ module Cucumber
         @hash, @line, @examples = hash, line, examples
         #description = hash.values.join(" | ")
       end
+      
+      def feature
+        @examples.feature
+      end
 
       def steps
         @examples.steps(@hash)

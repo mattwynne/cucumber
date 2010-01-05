@@ -8,6 +8,8 @@ module Cucumber
       include Tags
       include Description
       
+      attr_reader :feature
+      
       def initialize(keyword, description, line, tags, feature)
         @keyword, @description, @line, @tags, @feature = keyword, description, line, tags, feature
         @step_templates = []

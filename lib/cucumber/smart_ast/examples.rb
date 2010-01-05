@@ -12,6 +12,10 @@ module Cucumber
       def initialize(keyword, description, line, tags, scenario_outline)
         @keyword, @description, @line, @tags, @scenario_outline = keyword, description, line, tags, scenario_outline
       end
+      
+      def feature
+        @scenario_outline.feature
+      end
 
       def table!(rows, line)
         table = Table.new(rows, line)
