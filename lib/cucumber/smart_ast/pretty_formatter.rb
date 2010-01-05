@@ -11,7 +11,7 @@ module Cucumber
           @printer.feature(feature)
         end
         
-        if unit.from_outline?
+        if unit.example?
           on_new_scenario_outline(unit) do |scenario_outline|
             @printer.scenario_outline(scenario_outline)
           end
@@ -29,7 +29,7 @@ module Cucumber
       end
       
       def after_unit(unit_result)
-        @printer.after_example(unit_result) if unit_result.unit.from_outline?
+        @printer.after_example(unit_result) if unit_result.unit.example?
       end
       
       private

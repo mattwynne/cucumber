@@ -48,7 +48,7 @@ module Cucumber
         StepsRunner.new(run, self, all_steps).execute
       end
       
-      def from_outline?
+      def example?
         self.is_a?(Example)
       end
       
