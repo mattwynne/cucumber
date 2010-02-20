@@ -1,5 +1,4 @@
 require 'cucumber/formatter/ansicolor'
-require 'cucumber/smart_ast/unit'
 
 module Cucumber
   module SmartAst
@@ -17,6 +16,7 @@ module Cucumber
       private
       
       def colorize(result)
+        # TODO: Use the better colour handling in ANSIColor
         str = result.to_s
         case result.status
         when :passed

@@ -7,12 +7,12 @@ module Cucumber
   module SmartAst
     describe StepTemplate do
       before do
-        @step_template = StepTemplate.new("Given", "<num> Cucumbers in my <object>", 1, nil)
-        @args = { "num" => "5", "object" => "bucket", "foo" => "bar" }
+        @step_template = StepTemplate.new("Given", "<num> Cucumbers in my <object>", 1)
       end
       
       it "should interpolate variable arguments" do
-        @step_template.interpolate(@args).name.should == "5 Cucumbers in my bucket"
+        example_step = @step_template.create_example_step(%w{num object}, %w{5 belly}, 0)
+        example_step.instance_variable_get('@name').should == "5 Cucumbers in my belly"
       end
     end
   end

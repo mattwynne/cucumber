@@ -1,16 +1,20 @@
 module Cucumber
   module SmartAst
     class PyString
-      def initialize(content, line)
-        @content, @line = content, line
-      end
-      
       def self.default_arg_name
         "string"
       end
 
+      def initialize(content, line)
+        @content, @line = content, line
+      end
+      
       def accept(visitor)
         visitor.py_string(self)
+      end
+
+      def report_to(listener)
+        listener.py_string(@content, @line)
       end
 
       def to_s

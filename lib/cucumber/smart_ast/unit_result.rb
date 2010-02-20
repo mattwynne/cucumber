@@ -1,19 +1,31 @@
 module Cucumber
   module SmartAst
     class UnitResult
-      attr_reader :unit
-      
-      def initialize(unit, step_results)
+      def initialize(unit)
         @unit = unit
-        @step_results = step_results
+        @statuses = []
       end
-      
-      def steps
-        @unit.steps
+
+      def status!(status, exception)
+        @statuses << status
+        @exception = exception
       end
-      
-      def step_result(step)
-        @step_results.find{ |r| r.step === step }
+
+      def accept(visitor)
+        visitor.visit_unit_result(self)
+      end
+
+      def report_to(gherkin_listener)
+        @unit.after(gherkin_listener, self)
+      end
+
+      def report_as_row(gherkin_listener, rows, line, row, row_index)
+        raise "row has different dimensions from statuses: #{row.inspect}, #{@statuses.inspect}" if row.length != @statuses.length
+        gherkin_listener.table(rows, line, [row], row_index, @statuses, @exception)
+      end
+
+      def accept_hook?(hook)
+        @unit.accept_hook?(hook)
       end
     end
   end

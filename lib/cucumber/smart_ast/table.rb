@@ -5,8 +5,8 @@ module Cucumber
       
       attr_reader :raw, :line
 
-      def initialize(rows, line)
-        @raw, @line = rows, line
+      def initialize(raw, line)
+        @raw, @line = raw, line
       end
 
       def interpolate(hash)
@@ -15,6 +15,10 @@ module Cucumber
 
       def accept(visitor)
         visitor.step_table(self)
+      end
+
+      def report_to(listener)
+        listener.table(@raw, @line)
       end
 
       def to_execution_format
@@ -46,7 +50,7 @@ module Cucumber
       end
       
       def transpose
-        self.class.new(@raw.transpose, @line)
+        self.class.new(columns, @line)
       end
             
       def rows_hash

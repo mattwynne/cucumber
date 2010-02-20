@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require 'gherkin'
 require 'gherkin/i18n'
 require 'cucumber/smart_ast/feature_builder'

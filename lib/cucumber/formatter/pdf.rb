@@ -1,9 +1,25 @@
 require 'cucumber/formatter/console'
 require 'cucumber/formatter/io'
 require 'fileutils'
-require 'prawn'
-require "prawn/layout"
-require "prawn/format"
+
+begin
+  require 'htmlentities'
+rescue LoadError => e
+  e.message << "\nPlease gem install htmlentities"
+  raise e
+end
+
+begin
+  gem 'prawn', '=0.6.3'
+  require 'prawn'
+  require "prawn/layout"
+
+  gem 'prawn-format', '=0.2.3'
+  require "prawn/format"
+rescue LoadError => e
+  e.message << "\nPlease gem install prawn --version 0.6.3 && gem install prawn-format --version 0.2.3. Newer versions are not known to work."
+  raise e
+end
 
 module Cucumber
   module Formatter
@@ -20,6 +36,7 @@ module Cucumber
       def initialize(step_mother, path_or_io, options)
         @step_mother = step_mother
         @file = ensure_file(path_or_io, "pdf")
+        @coder = HTMLEntities.new
 
         if(options[:dry_run])
           @status_colors = { :passed => BLACK, :skipped => BLACK, :undefined => BLACK, :failed => BLACK}
@@ -130,7 +147,7 @@ module Cucumber
 
       def step_name(keyword, step_match, status, source_indent, background)
         return if @hide_this_step
-        line = "<b>#{keyword}</b> #{step_match.format_args("%s").gsub('<', '&lt;').gsub('>', '&gt;')}"
+        line = "<b>#{keyword}</b> #{encode(step_match.format_args("%s"))}"
         colorize(line, status)
       end
 
@@ -146,7 +163,7 @@ module Cucumber
         return if @hide_this_step
         if(table.kind_of? Cucumber::Ast::Table)
           keep_with do
-            @doc.table(table.rows << table.headers , :position => :center, :row_colors => ['ffffff', 'f0f0f0'])
+            print_table(table, ['ffffff', 'f0f0f0'])
           end
         end
       end
@@ -156,7 +173,7 @@ module Cucumber
         return if @hide_this_step
         row_colors = table.example_rows.map { |r| @status_colors[r.status] unless r.status == :skipped}
         keep_with do
-          @doc.table(table.rows, :headers => table.headers, :position => :center, :row_colors => row_colors)
+          print_table(table, row_colors)
         end
       end
 
@@ -165,9 +182,7 @@ module Cucumber
         s = %{"""\n#{string}\n"""}.indent(10)
         s = s.split("\n").map{|l| l =~ /^\s+$/ ? '' : l}
         s.each do |line|
-          line.gsub!('<', '&lt;')
-          line.gsub!('>', '&gt;')
-          keep_with { @doc.text line, :size => 8 }
+          keep_with { @doc.text(encode(line), :size => 8) }
         end
       end
 
@@ -190,6 +205,10 @@ module Cucumber
       end
       
       private
+      
+      def encode(text)
+        @coder.encode(text, :decimal)
+      end
       
       def colorize(text, status)
         keep_with do
@@ -224,6 +243,12 @@ module Cucumber
         render @pdf
         @pdf.move_down(20)
         @buffer = []
+      end
+      
+      def print_table(table, row_colors)
+        rows = table.rows.map { |row| row.map{ |cell| encode(cell) }}
+        headers = table.headers.map { |text| encode(text) }
+        @doc.table(rows, :headers => headers, :position => :center, :row_colors => row_colors)
       end
     end
   end

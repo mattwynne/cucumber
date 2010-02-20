@@ -1,60 +1,67 @@
-require 'cucumber/smart_ast/pretty_printer'
+require 'gherkin/tools/pretty_listener'
+
 module Cucumber
   module SmartAst
+    # TODO: Rename to StructureFormatter - or maybe StructureReporter,
+    # this class can delegate to several formatters, including Pretty, HTML and PDF.
     class PrettyFormatter
-      def initialize(_,io,__)
-        @printer = PrettyPrinter.new(io)
+      def initialize(_,io,__,monochrome=false)
+        @listener = Gherkin::Tools::PrettyListener.new(io, monochrome)
       end
-      
+
       def before_unit(unit)
-        on_new_feature(unit) do |feature|
-          @printer.feature(feature)
-        end
-        
-        if unit.example?
-          on_new_scenario_outline(unit) do |scenario_outline|
-            @printer.scenario_outline(scenario_outline)
-          end
-          
-          on_new_examples_table(unit) do |examples_table|
-            @printer.examples_table(examples_table)
-          end
-        else
-          @printer.scenario(unit)
-        end
+        unit.accept(self)
       end
-      
+
       def after_step(step_result)
-        step_result.accept(@printer)
+        step_result.accept(self)
       end
       
       def after_unit(unit_result)
-        @printer.after_example(unit_result) if unit_result.unit.example?
+        unit_result.accept(self)
       end
-      
-      private
 
-      def on_new_feature(unit)
-        if @feature != unit.feature
-          @feature = unit.feature
-          yield @feature
-        end
-      end
+      # AST Visitor API. TODO: Split this class in 2:
+      # * VisitorListener (for before_unit, after_step, after_unit)
+      # * ReportVisitor (for the rest)
+      # ** That takes a GherkinListener as ctor arg 
       
-      def on_new_scenario_outline(unit)
-        if @scenario_outline != unit.scenario_outline
-          @scenario_outline = unit.scenario_outline
-          yield @scenario_outline
-        end
-      end
-      
-      def on_new_examples_table(unit)
-        if @examples_table != unit.examples
-          @examples_table = unit.examples
-          yield @examples_table
+      def visit_feature(feature)
+        if(feature != @last_feature)
+          @last_feature = feature
+          feature.report_to(@listener)
         end
       end
 
+      def visit_scenario(scenario)
+        scenario.report_to(@listener)
+      end
+
+      def visit_scenario_outline(scenario_outline)
+        if(scenario_outline != @last_scenario_outline)
+          @last_scenario_outline = scenario_outline
+          scenario_outline.report_to(@listener)
+        end
+      end
+
+      def visit_examples(examples)
+        if(examples != @last_examples)
+          @last_examples = examples
+          examples.report_to(@listener)
+        end
+      end
+
+      def visit_example(example)
+        example.report_to(@listener)
+      end
+
+      def visit_unit_result(unit_result)
+        unit_result.report_to(@listener)
+      end
+
+      def visit_step_result(step_result)
+        step_result.report_to(@listener)
+      end
     end
   end
 end

@@ -95,11 +95,7 @@ class CucumberWorld
   end
 
   def run_spork_in_background(port = nil)
-    begin
-      require 'spork'
-    rescue Gem::LoadError => ex
-      gem 'spork'
-    end
+    require 'spork'
 
     pid = fork
     in_current_dir do

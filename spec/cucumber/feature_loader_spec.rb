@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 require 'cucumber'
 
@@ -25,7 +25,7 @@ module Cucumber
       @feature_loader = FeatureLoader.new
       @feature_loader.log = @log
     end
-        
+
     def register_parser(parser, &block)
       FeatureLoader.registry[:parsers].push mock('plugin class', :new => parser)
       block.call
@@ -99,7 +99,7 @@ module Cucumber
       end
     end
         
-    it "should allow a format rule to override extension-based format determination" do
+    xit "should allow a format rule to override extension-based format determination" do
       @textile_parser.should_receive(:parse).once
       
       register_format_rules({/\.txt$/ => :textile}) do
@@ -109,7 +109,7 @@ module Cucumber
       end
     end
         
-    it "should allow format rules to enable parsing features with the same extension in different formats" do
+    xit "should allow format rules to enable parsing features with the same extension in different formats" do
       @textile_parser.should_receive(:parse).once
       @gherkin_parser.should_receive(:parse).once
             

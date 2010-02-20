@@ -1,8 +1,6 @@
-require 'cucumber/smart_ast/step_container'
 require 'cucumber/smart_ast/scenario'
 require 'cucumber/smart_ast/scenario_outline'
 require 'cucumber/smart_ast/description'
-require 'cucumber/smart_ast/unit'
 
 module Cucumber
   module SmartAst
@@ -12,13 +10,14 @@ module Cucumber
 
       attr_accessor :language, :keyword
 
-      def initialize(keyword, description, line, tags)
-        @keyword, @description, @line = keyword, description, line
+      def initialize(feature_builder, keyword, description, line, tags)
+        @feature_builder, @keyword, @description, @line = feature_builder, keyword, description, line
         @tags = tags
       end
       
       def create_background(keyword, description, line)
-        @background = StepContainer.new(keyword, description, line, self)
+        # TODO: May need a Background class here for proper reporting.
+        @background = Scenario.new(keyword, description, line, [], self)
       end
       
       def create_scenario(keyword, description, line, tags)
@@ -30,11 +29,25 @@ module Cucumber
       end
       
       def adverbs
+        # TODO: is this used??
         @language.adverbs
       end
       
       def background_steps
         @background ? @background.steps : []
+      end
+
+      def accept(visitor)
+        visitor.visit_feature(self)
+      end
+
+      def report_to(gherkin_listener)
+        gherkin_listener.feature(@keyword, @description, @line)
+        @background.report_to(gherkin_listener) if @background
+      end
+
+      def location(line)
+        @feature_builder.location(line)
       end
     end
   end

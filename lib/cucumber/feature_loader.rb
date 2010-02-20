@@ -18,7 +18,11 @@ module Cucumber
   class FeatureLoader
     class << self
       def registry
-        @@registry ||= { :inputs => [], :parsers => [], :format_rules => {} }
+        @registry ||= { :inputs => [], :parsers => [], :format_rules => {} }
+      end
+
+      def clear_registry
+        @registry = nil
       end
     end
 
@@ -73,7 +77,7 @@ module Cucumber
       end
     end
     
-    def parser(name)      
+    def parser(name)
       matches = format_rules.select { |rule, _| rule.match(name) }
       if matches.empty?
         format = name.split('.').last.to_sym
@@ -81,7 +85,8 @@ module Cucumber
       elsif matches.length > 1
         raise AmbiguousFormatRules.new(name, matches)
       else
-        parsers[matches[0].last]
+#        parsers[matches[0].last]
+        parsers[:gherkin]
       end
     end
 
@@ -92,7 +97,7 @@ module Cucumber
     end
     
     def format_rules
-      @format_rules ||= @@registry[:format_rules]
+      @format_rules ||= self.class.registry[:format_rules]
     end
     
     def protocols
@@ -114,7 +119,7 @@ module Cucumber
     private
     
     def load(plugin_type)
-      @@registry[plugin_type].inject({}) do |collection, plugin_class|
+      self.class.registry[plugin_type].inject({}) do |collection, plugin_class|
         plugin = plugin_class.new
         yield collection, plugin
         collection

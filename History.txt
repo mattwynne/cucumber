@@ -1,3 +1,33 @@
+== In Git
+
+=== Bugfixes
+* uninitialized constant Cucumber::CODEPAGE (NameError) (#561 Aslak Hellesøy)
+* HTML Formatter is broken in cucumber 0.6.2 and cuke4duke 0.2.3 (#567 Dan Fitch)
+* Ensure consistent load order of support files (#564 Mike Sassak)
+* Fix various places in PDF formatter where HTML entities could break prawn (Matt Wynne)
+* The rerun formatter outputs failed, pending and undefined scenarios (before: only failing) (Aslak Hellesøy)
+
+=== New features
+* Links to step definitions are now clickable in TextMate's HTML report (Rob Aldred)
+* Add diff! message to wire protocol to allow for immediate diff response to invokes (Matt Wynne)
+
+== 0.6.2 2010-01-18
+
+=== Bugfixes
+* Update --help for --tags which was out of date. (Aslak Hellesøy)
+* Explicitly use Prawn 0.6.3 for pdf formatter since 0.7.1 is broken (Aslak Hellesøy)
+* PDF formatter renders tables incorrectly (#553 Andy Waite)
+* Better colouring in HTML report (Rob Aldred)
+* Detect output encoding properly on JRuby+Windows (Aslak Hellesøy)
+* Added option to override output encoding on Windows with an CUCUMBER_OUTPUT_ENCODING env var (Aslak Hellesøy)
+* PDF generation requires 'prawn-format' (#558 Aslak Hellesøy)
+
+=== New features
+* Show profiles in error scenario summary. (#550 Joseph Wilk)
+
+=== Removed features
+* element_at and table_at have been removed. Use tableish in cucumber-rails instead. (Aslak Hellesœy)
+
 == 0.6.1 2010-01-03
 
 === Bugfixes

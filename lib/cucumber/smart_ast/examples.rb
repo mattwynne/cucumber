@@ -7,8 +7,6 @@ module Cucumber
       include Tags
       include Description
       
-      attr_reader :keyword, :description, :line
-      
       def initialize(keyword, description, line, tags, scenario_outline)
         @keyword, @description, @line, @tags, @scenario_outline = keyword, description, line, tags, scenario_outline
       end
@@ -18,14 +16,30 @@ module Cucumber
       end
 
       def table!(rows, line)
-        table = Table.new(rows, line)
-        table.hashes.each_with_index do |hash, row_index|
-          yield Example.new(hash, table.line + row_index, self)
+        @rows = rows
+        @table_line = line
+        @rows[1..-1].each_with_index do |row, row_index|
+          yield @scenario_outline.create_example(@rows[0], row, line+=1, row_index+1, self)
         end
       end
 
-      def steps(hash)
-        @scenario_outline.steps(hash)
+      def accept(visitor)
+        @scenario_outline.accept(visitor)
+        visitor.visit_examples(self)
+      end
+
+      def report_to(gherkin_listener)
+        gherkin_listener.examples(@keyword, @description, @line)
+        gherkin_listener.table(@rows, @table_line, [@rows[0]], 0, Array.new(@rows[0].length) {:outline_param})
+      end
+
+      def execute(row, step_mother, listener)
+        @scenario_outline.execute(@rows[0], row, step_mother, listener)
+      end
+
+      def report_result(gherkin_listener, unit_result, row_index)
+        row = @rows[row_index]
+        unit_result.report_as_row(gherkin_listener, @rows, @table_line+row_index, row, row_index)
       end
     end
   end

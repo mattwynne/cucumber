@@ -24,15 +24,15 @@ Feature: http://gist.github.com/221223
       """
     And a file named "features/step_definitions/steps.rb" with:
       """
-      Given /^a multiline string:$/ do |s|
+      Given /^a multiline string:$/ do |s| x=1
         raise "I got multiline:\n#{s}"
       end
 
-      Given /^a table:$/ do |t|
+      Given /^a table:$/ do |t| x=1
         raise "I got table:\n#{t.raw.inspect}"
       end
 
-      Given /^I call a multiline string with (.*)$/ do |s|
+      Given /^I call a multiline string with (.*)$/ do |s| x=1
         steps %Q{
           Given a multiline string:
             \"\"\"
@@ -42,7 +42,7 @@ Feature: http://gist.github.com/221223
         }
       end
 
-      Given /^I call a table with (.*)$/ do |s|
+      Given /^I call a table with (.*)$/ do |s| x=1
         steps %Q{
           Given a table:
             |a|b|
@@ -78,7 +78,6 @@ Feature: http://gist.github.com/221223
 
       """
 
-  @fails_on_1_9
   Scenario: Call multiline string
     When I run cucumber features/f.feature:10
     Then STDERR should be empty
@@ -102,7 +101,6 @@ Feature: http://gist.github.com/221223
 
       """
 
-  @fails_on_1_9
   Scenario: Call table
     When I run cucumber features/f.feature:13
     Then STDERR should be empty

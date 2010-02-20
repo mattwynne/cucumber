@@ -1,4 +1,3 @@
-require 'cucumber/smart_ast/listeners_broadcaster'
 require 'cucumber/smart_ast/run'
 
 module Cucumber

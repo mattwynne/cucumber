@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require 'treetop'
 require 'cucumber/parser'
 
@@ -14,7 +14,7 @@ module Cucumber
       end
 
       def parse(text)
-        @parser.__send__(:prepare_to_parse, text)
+        @parser.prepare_to_parse(text)
         @parser.root = :table
         table = @parser._nt_table
         table.raw

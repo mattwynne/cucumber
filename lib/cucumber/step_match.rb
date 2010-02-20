@@ -1,6 +1,6 @@
 module Cucumber
   class StepMatch #:nodoc:
-    attr_reader :step_definition
+    attr_reader :step_definition, :step_arguments
 
     # Creates a new StepMatch. The +name_to_report+ argument is what's reported, unless it's is,
     # in which case +name_to_report+ is used instead.
@@ -55,11 +55,13 @@ module Cucumber
       @step_definition.regexp_source.jlength
     end
 
+    # TODO: Remove. Now lives in Gherkin::Argument
     def replace_arguments(string, step_arguments, format, &proc)
       s = string.dup
-      offset = 0
+      offset = past_offset = 0
       step_arguments.each do |step_argument|
-        next if step_argument.byte_offset.nil?
+        next if step_argument.byte_offset.nil? || step_argument.byte_offset < past_offset
+        
         replacement = if block_given?
           proc.call(step_argument.val)
         elsif Proc === format
@@ -70,6 +72,7 @@ module Cucumber
 
         s[step_argument.byte_offset + offset, step_argument.val.length] = replacement
         offset += replacement.jlength - step_argument.val.jlength
+        past_offset = step_argument.byte_offset + step_argument.val.length
       end
       s
     end
