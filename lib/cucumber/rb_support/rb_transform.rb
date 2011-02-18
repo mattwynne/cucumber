@@ -32,6 +32,31 @@ module Cucumber
           @rb_language.current_world.cucumber_instance_exec(true, @regexp.inspect, *args, &@proc)
         end
       end
+    
+      def to_s
+        wrap_in_capture(
+          strip_captures(
+            strip_anchors(@regexp.source)))
+      end
+    
+    private
+
+      def wrap_in_capture(regexp_source)
+        "(#{regexp_source})"
+      end
+
+      def strip_captures(regexp_source)
+        # TODO: won't work with escaped parenthes... how do we exclude them?
+        regexp_source.
+          gsub(/\(/, '').
+          gsub(/\)/, '')
+      end
+
+      def strip_anchors(regexp_source)
+        regexp_source.
+          gsub(/^\^/, '').
+          gsub(/\$$/, '')
+      end
     end
   end
 end

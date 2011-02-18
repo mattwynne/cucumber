@@ -226,6 +226,22 @@ or http://wiki.github.com/aslakhellesoy/cucumber/a-whole-new-world.
             rb.execute_transforms(['shape: square, color: red']).should == [{:square => :red}]
             rb.execute_transforms(['not shape: square, not color: red']).should == ['not shape: square, not color: red']
           end
+          
+          describe "with a name" do
+            before(:each) do
+              dsl.Transform(/^shape: (.+)$/, :named => 'shape: <name>') do |shape|
+                shape.to_sym
+              end
+            end
+            
+            it "allows the name to be found using #arg" do
+              dsl.arg('shape: <name>').to_s.should == "(shape: .+)"
+            end
+            
+            it "transforms as expected" do
+              rb.execute_transforms(['shape: circle']).should == [:circle]
+            end
+          end
         end
 
         it "allows registering a string pattern" do

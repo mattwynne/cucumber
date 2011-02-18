@@ -19,8 +19,12 @@ module Cucumber
           @rb_language.register_rb_hook(phase, tag_names, proc)
         end
 
-        def register_rb_transform(regexp, proc)
-          @rb_language.register_rb_transform(regexp, proc)          
+        def register_rb_transform(regexp, options, proc)
+          @rb_language.register_rb_transform(regexp, options, proc)
+        end
+        
+        def get_named_rb_transform(name)
+          @rb_language.get_named_rb_transform(name)
         end
 
         def register_rb_step_definition(regexp, proc)
@@ -82,8 +86,12 @@ module Cucumber
       # the pattern contains captures then they will be yielded as arguments to the
       # provided proc. The return value of the proc is consequently yielded to the
       # step definition.
-      def Transform(regexp, &proc)
-        RbDsl.register_rb_transform(regexp, proc)
+      def Transform(regexp, options = {}, &proc)
+        RbDsl.register_rb_transform(regexp, options, proc)
+      end
+      
+      def arg(name)
+        RbDsl.get_named_rb_transform(name)
       end
       
       # Registers a proc that will run after Cucumber is configured. You can register as 

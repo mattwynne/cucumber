@@ -120,8 +120,17 @@ module Cucumber
         add_hook(phase, RbHook.new(self, tag_expressions, proc))
       end
 
-      def register_rb_transform(regexp, proc)
-        add_transform(RbTransform.new(self, regexp, proc))
+      def register_rb_transform(regexp, options, proc)
+        transform = RbTransform.new(self, regexp, proc)
+        add_transform(transform)
+        if options.key?(:named)
+          @named_tranforms ||= {}
+          @named_tranforms[options[:named]] = transform
+        end
+      end
+      
+      def get_named_rb_transform(name)
+        @named_tranforms[name]
       end
 
       def register_rb_step_definition(regexp, proc)
