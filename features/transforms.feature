@@ -41,6 +41,26 @@ Feature: Transforms
       I am 15 years old and I have blonde hair
       """
   
+  Scenario: Stored Anonymous Transform
+    If you keep a reference to the transform, you can use it in your
+    regular expressions to avoid repeating the phrase:
+
+    And a file named "features/step_definitions/steps.rb" with:
+      """
+      A_PERSON = Transform(/a Person aged (\d+)/) do |age|
+        Person.new(age.to_i)
+      end
+
+      Given /^#{A_PERSON} with blonde hair$/ do |person|
+        announce "#{person} and I have blonde hair"
+      end
+      """
+    When I run cucumber "features/foo.feature"
+    Then it should pass with:
+      """
+      I am 15 years old and I have blonde hair
+      """
+  
   Scenario: Named Transform
   
     With a named transform, you can retrieve a reference to the transform and use it
@@ -55,11 +75,11 @@ Feature: Transforms
       """
     And a file named "features/step_definitions/steps.rb" with:
       """
-      Transform(/a Person aged (\d+)/, :named => 'a person aged <age>') do |age|
+      Transform(/a Person aged (\d+)/, :named => 'a person') do |age|
         Person.new(age.to_i)
       end
 
-      Given /^#{arg('a person aged <age>')} with blonde hair$/ do |person|
+      Given /^#{arg('a person')} with blonde hair$/ do |person|
         announce "#{person} and I have blonde hair"
       end
       """
