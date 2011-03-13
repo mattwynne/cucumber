@@ -130,10 +130,6 @@ module Cucumber
         end
       end
       
-      def get_named_rb_transform(name)
-        @named_tranforms[name]
-      end
-
       def register_rb_step_definition(regexp, proc)
         step_definition = RbStepDefinition.new(self, regexp, proc)
         @step_definitions << step_definition

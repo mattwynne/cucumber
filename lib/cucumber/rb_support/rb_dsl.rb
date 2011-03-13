@@ -23,10 +23,6 @@ module Cucumber
           @rb_language.register_rb_transform(regexp, options, proc)
         end
         
-        def get_named_rb_transform(name)
-          @rb_language.get_named_rb_transform(name)
-        end
-
         def register_rb_step_definition(regexp, proc)
           @rb_language.register_rb_step_definition(regexp, proc)
         end
@@ -88,10 +84,6 @@ module Cucumber
       # step definition.
       def Transform(regexp, options = {}, &proc)
         RbDsl.register_rb_transform(regexp, options, proc)
-      end
-      
-      def arg(name)
-        RbDsl.get_named_rb_transform(name)
       end
       
       # Registers a proc that will run after Cucumber is configured. You can register as 
