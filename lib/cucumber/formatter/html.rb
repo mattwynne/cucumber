@@ -164,6 +164,9 @@ module Cucumber
       end
 
       def scenario_name(keyword, name, file_colon_line, source_indent)
+        @builder.span(:class => 'scenario_file') do
+          @builder << file_colon_line
+        end
         @listing_background = false
         @builder.h3(:id => "scenario_#{@scenario_number}") do
           @builder.span(keyword + ':', :class => 'keyword')
@@ -553,7 +556,7 @@ module Cucumber
       end
 
       def backtrace_line(line)
-        line.gsub(/^([^:]*\.(?:rb|feature|haml)):(\d*)/) do
+        line.gsub(/\A([^:]*\.(?:rb|feature|haml)):(\d*).*\z/) do
           if ENV['TM_PROJECT_DIRECTORY']
             "<a href=\"txmt://open?url=file://#{File.expand_path($1)}&line=#{$2}\">#{$1}:#{$2}</a> "
           else
