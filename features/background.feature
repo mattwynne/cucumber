@@ -4,7 +4,8 @@ Feature: Background
   I want to write a background section in my features.
 
   Background:
-    Given a file named "features/passing_background.feature" with:
+  
+  	Given a file named "features/passing_background.feature" with:
       """
       Feature: Passing background sample
 
