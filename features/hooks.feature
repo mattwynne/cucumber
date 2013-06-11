@@ -1,5 +1,7 @@
 Feature: Tagged hooks
 
+  Yo this is a test.
+
   Background:
     Given a file named "features/step_definitions/steps.rb" with:
       """
